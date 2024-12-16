@@ -1,0 +1,34 @@
+services:
+  haproxy:
+    build:
+      context: ./haproxy
+      dockerfile: Dockerfile
+    container_name: haproxy
+    ports:
+      - "80:80" # HTTP
+      # http://localhost:1936/stats
+      - "1936:1936" # HAProxy Stats
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ./haproxy/monitor_haproxy.py:/monitor_haproxy.py
+    networks:
+      - haproxy-net
+
+  backend1:
+    build:
+      context: ./backend1
+      dockerfile: Dockerfile
+    container_name: backend1
+    networks:
+      - haproxy-net
+
+  backend2:
+    build:
+      context: ./backend2
+      dockerfile: Dockerfile
+    container_name: backend2
+    networks:
+      - haproxy-net
+
+networks:
+  haproxy-net:
